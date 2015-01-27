@@ -13,13 +13,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package cpd4414.assign2;
 
 import cpd4414.assign2.OrderQueue;
 import cpd4414.assign2.Purchase;
 import cpd4414.assign2.Order;
+import java.util.ArrayDeque;
 import java.util.Date;
+import java.util.Queue;
 import org.junit.After;
 import org.junit.AfterClass;
 import static org.junit.Assert.*;
@@ -29,25 +30,25 @@ import org.junit.Test;
 
 /**
  *
- * @author Len Payne <len.payne@lambtoncollege.ca>
+ * @author Pavlo Gudzenko <pavlo.gudzenko@gmail.com>
  */
 public class OrderQueueTest {
-    
+
     public OrderQueueTest() {
     }
-    
+
     @BeforeClass
     public static void setUpClass() {
     }
-    
+
     @AfterClass
     public static void tearDownClass() {
     }
-    
+
     @Before
     public void setUp() {
     }
-    
+
     @After
     public void tearDown() {
     }
@@ -59,17 +60,44 @@ public class OrderQueueTest {
         order.addPurchase(new Purchase("PROD0004", 450));
         order.addPurchase(new Purchase("PROD0006", 250));
         orderQueue.add(order);
-        
+
         long expResult = new Date().getTime();
         long result = order.getTimeReceived().getTime();
         assertTrue(Math.abs(result - expResult) < 1000);
     }
-    
-    @Test 
-    public void testWhenGivenRequestForNextOrderWhenThereAreNoOrdersInTheSystemReturnNull(){
+
+    @Test
+    public void testWhenGivenRequestForNextOrderWhenThereAreNoOrdersInTheSystemReturnNull() {
         OrderQueue orderQ = new OrderQueue();
-        String isThereAnyOrders = orderQ.chekingIfOrdersExist(orderQ);
+        String isThereAnyOrders = orderQ.chekingIfOrdersExist(orderQ.orderQueue);
         assertSame(null, isThereAnyOrders);
     }
-    
+
+    @Test
+    public void testWhenThereAreOrdersInSystemReturnOrderWithTheEarliestTimeReceivedWithNoTimeProcessed() {
+        OrderQueue orderQ = new OrderQueue();
+
+        // adding order#1
+        Order order1 = new Order("CUST00001", "ABC Construction");
+        order1.addPurchase(new Purchase("PROD0004", 450));
+        order1.addPurchase(new Purchase("PROD0006", 250));
+        orderQ.add(order1);
+
+        // adding order#2
+        Order order2 = new Order("CUST00002", "Fozzy Group");
+        order2.addPurchase(new Purchase("PROD0012", 50));
+        orderQ.add(order2);
+
+        // adding order#3
+        Order order3 = new Order("CUST00002", "Welding&Steel");
+        order3.addPurchase(new Purchase("PROD0012", 150));
+        orderQ.add(order2);
+
+        Order expResult = orderQ.orderQueue.element();
+
+        
+        Order result = orderQ.theEarliestOrder(orderQ.orderQueue);
+        assertEquals(expResult, result);
+
+    }
 }

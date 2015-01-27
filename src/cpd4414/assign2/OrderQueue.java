@@ -22,7 +22,7 @@ import java.util.Queue;
 
 /**
  *
- * @author Len Payne <len.payne@lambtoncollege.ca>
+ * @author Pavlo Gudzenko <pavlo.gudzenko@gmail.com>
  */
 public class OrderQueue {
     Queue<Order> orderQueue = new ArrayDeque<>();
@@ -34,10 +34,23 @@ public class OrderQueue {
         order.setTimeReceived(new Date());
     }
     
-    public String chekingIfOrdersExist(OrderQueue orderQ){
+    public String chekingIfOrdersExist(Queue<Order> orderQueue){
       String isNull = "";
-         if (orderQ.orderQueue.isEmpty())  isNull = null;       
+         if (orderQueue.isEmpty())  isNull = null;       
         return isNull;
+    }
+    
+    public Order theEarliestOrder(Queue<Order> OQ){
+        Order result = null;
+        for (int i = 0; i < OQ.size(); i++) {
+            if (OQ.element().getTimeProcessed() == null) {
+                result = OQ.element();
+                break;
+            } else {
+                OQ.remove();
+            }
+        }
+       return result; 
     }
     
 }

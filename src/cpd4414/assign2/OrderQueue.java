@@ -28,7 +28,16 @@ public class OrderQueue {
     Queue<Order> orderQueue = new ArrayDeque<>();
     
     public void add(Order order) {
+   
+       
         orderQueue.add(order);
         order.setTimeReceived(new Date());
     }
+    
+    public String chekingIfOrdersExist(OrderQueue orderQ){
+      String isNull = "";
+         if (orderQ.orderQueue.isEmpty())  isNull = null;       
+        return isNull;
+    }
+    
 }

@@ -65,4 +65,11 @@ public class OrderQueueTest {
         assertTrue(Math.abs(result - expResult) < 1000);
     }
     
+    @Test 
+    public void testWhenGivenRequestForNextOrderWhenThereAreNoOrdersInTheSystemReturnNull(){
+        OrderQueue orderQ = new OrderQueue();
+        String isThereAnyOrders = orderQ.chekingIfOrdersExist(orderQ);
+        assertSame(null, isThereAnyOrders);
+    }
+    
 }

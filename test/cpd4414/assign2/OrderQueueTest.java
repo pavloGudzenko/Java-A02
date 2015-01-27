@@ -94,8 +94,7 @@ public class OrderQueueTest {
         orderQ.add(order2);
 
         Order expResult = orderQ.orderQueue.element();
-
-        
+ 
         Order result = orderQ.theEarliestOrder(orderQ.orderQueue);
         assertEquals(expResult, result);
 

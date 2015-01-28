@@ -19,6 +19,7 @@ import cpd4414.assign2.OrderQueue;
 import cpd4414.assign2.Purchase;
 import cpd4414.assign2.Order;
 import cpd4414.assign2.noTimeReceivedException;
+import cpd4414.assign2.noListOfPurchaseException;
 import java.util.ArrayDeque;
 import java.util.Date;
 import java.util.Queue;
@@ -107,18 +108,32 @@ public class OrderQueueTest {
     }
     
     @Test
-    public void testWhenTheOrderDoesNotHaveTimeReceivedThrowException(){
+    public void testWhenNeitherCustomerIdNorCustomerNameExistsThrowException() throws noCustomerIdAndNameException{
+      
         try{
-        Order order = new Order("CUST00001", "ABC Construction");
-        order.addPurchase(new Purchase("PROD0004", 450));
-        order.addPurchase(new Purchase("PROD0006", 250));       
-        order.processOrder(order);
-        } catch (noTimeReceivedException ex){
-            assertEquals("The order does not have a 'time received' ", ex.message());
-        }
-            
-       
-        
+        OrderQueue orderQ = new OrderQueue();
 
-    } 
+        Order order = new Order(null, null);
+        order.addPurchase(new Purchase("PROD0004", 450));
+        order.addPurchase(new Purchase("PROD0006", 250));
+        orderQ.chekingOrderForCustomerInfo(order);
+        orderQ.add(order);
+        } catch (noCustomerIdAndNameException ex) {
+            assertEquals("The Customer ID and/or Customer Name are not exist' ", ex.message());
+        }
+    }
+    
+    @Test
+    public void testWhenthereIsNoListOfPurchasesThenThrowException(){
+      
+        try{
+        OrderQueue orderQ = new OrderQueue();
+
+        Order order = new Order("CUST00002", "Welding&Steel");
+        orderQ.chekingListOfPurchase(order);
+        orderQ.add(order);
+        } catch (noListOfPurchaseException ex) {
+            assertEquals("The List Of Purchases is empty", ex.message());
+        }
+    }
 }

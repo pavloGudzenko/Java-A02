@@ -19,6 +19,7 @@ package cpd4414.assign2;
 import java.util.ArrayDeque;
 import java.util.Date;
 import java.util.Queue;
+import cpd4414.assign2.noCustomerIdAndNameException;
 
 /**
  *
@@ -27,10 +28,11 @@ import java.util.Queue;
 public class OrderQueue {
     Queue<Order> orderQueue = new ArrayDeque<>();
     
-    public void add(Order order) {   
+    public void add(Order order) { 
         orderQueue.add(order);
         order.setTimeReceived(new Date());
     }
+    
     
     public String chekingIfOrdersExist(Queue<Order> orderQueue){
       String isNull = "";
@@ -51,4 +53,27 @@ public class OrderQueue {
        return result; 
     }
     
+    public void chekingOrderForCustomerInfo(Order order) throws noCustomerIdAndNameException{
+       if (order.getCustomerId() == null || order.getCustomerName() == null || order.getCustomerId() == "" || order.getCustomerName() == "") 
+           throw new noCustomerIdAndNameException();
+    }
+    
+    public void chekingListOfPurchase(Order order) throws noListOfPurchaseException{
+       if (order.getListOfPurchases().isEmpty()) 
+           throw new noListOfPurchaseException();
+    }
+    
+}
+
+
+class noCustomerIdAndNameException extends Exception{
+    public String message(){
+      return "The Customer ID and/or Customer Name are not exist' ";
+    }
+}
+
+class noListOfPurchaseException extends Exception{
+    public String message(){
+      return "The List Of Purchases is empty";
+    }
 }

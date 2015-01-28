@@ -13,7 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package cpd4414.assign2;
 
 import java.util.ArrayDeque;
@@ -26,21 +25,41 @@ import cpd4414.assign2.noCustomerIdAndNameException;
  * @author Pavlo Gudzenko <pavlo.gudzenko@gmail.com>
  */
 public class OrderQueue {
+
     Queue<Order> orderQueue = new ArrayDeque<>();
-    
-    public void add(Order order) { 
+
+    // adding new Order
+    public void add(Order order) throws noCustomerIdAndNameException, noListOfPurchaseException {
+         if (order.getCustomerId() == null || order.getCustomerName() == null || order.getCustomerId() == "" || order.getCustomerName() == "") {
+            throw new noCustomerIdAndNameException();
+         }
+             if (order.getListOfPurchases().isEmpty()) {
+            throw new noListOfPurchaseException();
+        }
+        
         orderQueue.add(order);
         order.setTimeReceived(new Date());
     }
     
     
-    public String chekingIfOrdersExist(Queue<Order> orderQueue){
-      String isNull = "";
-         if (orderQueue.isEmpty())  isNull = null;       
-        return isNull;
+
+    // request for Order
+    public Order requestForOrder() {
+        if (orderQueue.isEmpty()) {
+            return null;
+        } else {
+            return orderQueue.element();
+        }
     }
-    
-    public Order theEarliestOrder(Queue<Order> OQ){
+        
+        
+
+    // processing Orders
+    public void process(Order order) {
+        order.setTimeProcessed(new Date());
+    }
+
+    public Order theEarliestOrder(Queue<Order> OQ) {
         Order result = null;
         for (int i = 0; i < OQ.size(); i++) {
             if (OQ.element().getTimeProcessed() == null) {
@@ -50,30 +69,30 @@ public class OrderQueue {
                 OQ.remove();
             }
         }
-       return result; 
+        return result;
     }
+
+    public void chekingOrderForCustomerInfo(Order order) throws noCustomerIdAndNameException {
+       
+        }
+
+
+    public void chekingListOfPurchase(Order order) throws noListOfPurchaseException {
     
-    public void chekingOrderForCustomerInfo(Order order) throws noCustomerIdAndNameException{
-       if (order.getCustomerId() == null || order.getCustomerName() == null || order.getCustomerId() == "" || order.getCustomerName() == "") 
-           throw new noCustomerIdAndNameException();
     }
-    
-    public void chekingListOfPurchase(Order order) throws noListOfPurchaseException{
-       if (order.getListOfPurchases().isEmpty()) 
-           throw new noListOfPurchaseException();
-    }
-    
+
 }
 
+class noCustomerIdAndNameException extends Exception {
 
-class noCustomerIdAndNameException extends Exception{
-    public String message(){
-      return "The Customer ID and/or Customer Name are not exist' ";
+    public String message() {
+        return "The Customer ID and/or Customer Name are not exist' ";
     }
 }
 
-class noListOfPurchaseException extends Exception{
-    public String message(){
-      return "The List Of Purchases is empty";
+class noListOfPurchaseException extends Exception {
+
+    public String message() {
+        return "The List Of Purchases is empty";
     }
 }

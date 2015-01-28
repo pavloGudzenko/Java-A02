@@ -55,28 +55,67 @@ public class OrderQueueTest {
     public void tearDown() {
     }
 
-    @Test
-    public void testWhenCustomerExistsAndPurchasesExistThenTimeReceivedIsNow() {
+    // Time Received = now
+    @Test 
+    public void testWhenCustomerExistsAndPurchasesExistThenTimeReceivedIsNow() throws noCustomerIdAndNameException, noListOfPurchaseException {
         OrderQueue orderQueue = new OrderQueue();
         Order order = new Order("CUST00001", "ABC Construction");
         order.addPurchase(new Purchase("PROD0004", 450));
         order.addPurchase(new Purchase("PROD0006", 250));
         orderQueue.add(order);
- 
+
         long expResult = new Date().getTime();
         long result = order.getTimeReceived().getTime();
         assertTrue(Math.abs(result - expResult) < 1000);
     }
+    
+      // No Customer Name, no CustomerId
+        @Test
+    public void testWhenNeitherCustomerIdNorCustomerNameExistsThrowException() throws noCustomerIdAndNameException, noListOfPurchaseException {
+        boolean exceptionFlag = false;
+        try {
+            OrderQueue orderQ = new OrderQueue();
 
+            Order order = new Order(null, null);
+            order.addPurchase(new Purchase("PROD0004", 450));
+            order.addPurchase(new Purchase("PROD0006", 250));
+            orderQ.chekingOrderForCustomerInfo(order);
+            orderQ.add(order);
+        } catch (noCustomerIdAndNameException ex) {
+            exceptionFlag = true;
+//            assertEquals("The Customer ID and/or Customer Name are not exist' ", ex.message());
+        }
+        assertTrue(exceptionFlag);
+    }
+    
+    
+    // No List Of Purchases
+     @Test
+    public void testWhenthereIsNoListOfPurchasesThenThrowException() throws noCustomerIdAndNameException {
+        boolean exceptionFlag = false;
+        try {
+            OrderQueue orderQ = new OrderQueue();
+
+            Order order = new Order("CUST00002", "Welding&Steel");
+            orderQ.chekingListOfPurchase(order);
+            orderQ.add(order);
+        } catch (noListOfPurchaseException ex) {
+            exceptionFlag = true;
+        }
+        assertTrue(exceptionFlag);
+    }
+
+
+   
     @Test
     public void testWhenThereAreNoOrdersInTheSystemReturnNull() {
         OrderQueue orderQ = new OrderQueue();
-        String isThereAnyOrders = orderQ.chekingIfOrdersExist(orderQ.orderQueue);
+        Order isThereAnyOrders = orderQ.requestForOrder();
         assertSame(null, isThereAnyOrders);
     }
 
     @Test
-    public void testWhenThereAreOrdersInSystemReturnOrderWithTheEarliestTimeReceivedWithNoTimeProcessed() {
+    public void testWhenThereAreOrdersInSystemReturnOrderWithTheEarliestTimeReceivedWithNoTimeProcessed() throws noCustomerIdAndNameException, noListOfPurchaseException {
         OrderQueue orderQ = new OrderQueue();
 
         // adding order#1
@@ -96,44 +135,38 @@ public class OrderQueueTest {
         orderQ.add(order2);
 
         Order expResult = orderQ.orderQueue.element();
- 
+
         Order result = orderQ.theEarliestOrder(orderQ.orderQueue);
         assertEquals(expResult, result);
 
     }
-    
+
     @Test
-    public void testWhenOrderHasTimeReceivedAndPurchasesAreInInventoryTable(){
-      
+    public void testWhenOrderHasTimeReceivedAndPurchasesAreInInventoryTable() {
+
     }
-    
+
+
+   
     @Test
-    public void testWhenNeitherCustomerIdNorCustomerNameExistsThrowException() throws noCustomerIdAndNameException{
-      
-        try{
+    public void testGivenRequestForNextOrderReturnOrderWithTheEarliestTimeReceived() throws noCustomerIdAndNameException, noListOfPurchaseException {
         OrderQueue orderQ = new OrderQueue();
 
-        Order order = new Order(null, null);
-        order.addPurchase(new Purchase("PROD0004", 450));
-        order.addPurchase(new Purchase("PROD0006", 250));
-        orderQ.chekingOrderForCustomerInfo(order);
-        orderQ.add(order);
-        } catch (noCustomerIdAndNameException ex) {
-            assertEquals("The Customer ID and/or Customer Name are not exist' ", ex.message());
-        }
-    }
-    
-    @Test
-    public void testWhenthereIsNoListOfPurchasesThenThrowException(){
-      
-        try{
-        OrderQueue orderQ = new OrderQueue();
+        // adding order#1
+        Order order1 = new Order("CUST00001", "ABC Construction");
+        order1.addPurchase(new Purchase("PROD0004", 450));
+        order1.addPurchase(new Purchase("PROD0006", 250));
+        orderQ.add(order1);
 
-        Order order = new Order("CUST00002", "Welding&Steel");
-        orderQ.chekingListOfPurchase(order);
-        orderQ.add(order);
-        } catch (noListOfPurchaseException ex) {
-            assertEquals("The List Of Purchases is empty", ex.message());
-        }
+        // adding order#2
+        Order order2 = new Order("CUST00002", "Fozzy Group");
+        order2.addPurchase(new Purchase("PROD0012", 50));
+        orderQ.add(order2);
+        
+        Order expResult = order1;
+        Order realResult = orderQ.requestForOrder();
+        
+        assertEquals(expResult, realResult);
+
     }
 }

@@ -16,6 +16,7 @@
 
 package cpd4414.assign2;
 
+
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -98,5 +99,13 @@ public class Order {
         this.notes = notes;
     }
     
-    
+    public void processOrder(Order order) throws noTimeReceivedException{
+        if (order.timeReceived == null) throw new noTimeReceivedException();
+}
+}
+
+class noTimeReceivedException extends Exception{
+    public String message(){
+      return "The order does not have a 'time received' ";
+    }
 }

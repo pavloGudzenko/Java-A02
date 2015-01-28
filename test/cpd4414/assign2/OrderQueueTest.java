@@ -18,6 +18,7 @@ package cpd4414.assign2;
 import cpd4414.assign2.OrderQueue;
 import cpd4414.assign2.Purchase;
 import cpd4414.assign2.Order;
+import cpd4414.assign2.noTimeReceivedException;
 import java.util.ArrayDeque;
 import java.util.Date;
 import java.util.Queue;
@@ -60,14 +61,14 @@ public class OrderQueueTest {
         order.addPurchase(new Purchase("PROD0004", 450));
         order.addPurchase(new Purchase("PROD0006", 250));
         orderQueue.add(order);
-
+ 
         long expResult = new Date().getTime();
         long result = order.getTimeReceived().getTime();
         assertTrue(Math.abs(result - expResult) < 1000);
     }
 
     @Test
-    public void testWhenGivenRequestForNextOrderWhenThereAreNoOrdersInTheSystemReturnNull() {
+    public void testWhenThereAreNoOrdersInTheSystemReturnNull() {
         OrderQueue orderQ = new OrderQueue();
         String isThereAnyOrders = orderQ.chekingIfOrdersExist(orderQ.orderQueue);
         assertSame(null, isThereAnyOrders);
@@ -99,4 +100,25 @@ public class OrderQueueTest {
         assertEquals(expResult, result);
 
     }
+    
+    @Test
+    public void testWhenOrderHasTimeReceivedAndPurchasesAreInInventoryTable(){
+      
+    }
+    
+    @Test
+    public void testWhenTheOrderDoesNotHaveTimeReceivedThrowException(){
+        try{
+        Order order = new Order("CUST00001", "ABC Construction");
+        order.addPurchase(new Purchase("PROD0004", 450));
+        order.addPurchase(new Purchase("PROD0006", 250));       
+        order.processOrder(order);
+        } catch (noTimeReceivedException ex){
+            assertEquals("The order does not have a 'time received' ", ex.message());
+        }
+            
+       
+        
+
+    } 
 }

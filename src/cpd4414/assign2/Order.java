@@ -99,13 +99,4 @@ public class Order {
         this.notes = notes;
     }
     
-    public void processOrder(Order order) throws noTimeReceivedException{
-        if (order.timeReceived == null) throw new noTimeReceivedException();
-}
-}
-
-class noTimeReceivedException extends Exception{
-    public String message(){
-      return "The order does not have a 'time received' ";
-    }
 }

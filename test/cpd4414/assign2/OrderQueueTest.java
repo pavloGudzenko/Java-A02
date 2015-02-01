@@ -15,11 +15,12 @@
  */
 package cpd4414.assign2;
 
-import cpd4414.assign2.OrderQueue;
-import cpd4414.assign2.Purchase;
 import cpd4414.assign2.Order;
-import cpd4414.assign2.noTimeReceivedException;
+import cpd4414.assign2.OrderQueue;
+import cpd4414.assign2.noCustomerIdAndNameException;
+import cpd4414.assign2.Purchase;
 import cpd4414.assign2.noListOfPurchaseException;
+import cpd4414.assign2.noTimeReceivedException;
 import java.util.ArrayDeque;
 import java.util.Date;
 import java.util.Queue;
@@ -79,7 +80,6 @@ public class OrderQueueTest {
             Order order = new Order(null, null);
             order.addPurchase(new Purchase("PROD0004", 450));
             order.addPurchase(new Purchase("PROD0006", 250));
-            orderQ.chekingOrderForCustomerInfo(order);
             orderQ.add(order);
         } catch (noCustomerIdAndNameException ex) {
             exceptionFlag = true;
@@ -97,58 +97,16 @@ public class OrderQueueTest {
             OrderQueue orderQ = new OrderQueue();
 
             Order order = new Order("CUST00002", "Welding&Steel");
-            orderQ.chekingListOfPurchase(order);
             orderQ.add(order);
         } catch (noListOfPurchaseException ex) {
             exceptionFlag = true;
         }
         assertTrue(exceptionFlag);
     }
-
-
-   
-    @Test
-    public void testWhenThereAreNoOrdersInTheSystemReturnNull() {
-        OrderQueue orderQ = new OrderQueue();
-        Order isThereAnyOrders = orderQ.requestForOrder();
-        assertSame(null, isThereAnyOrders);
-    }
-
-    @Test
-    public void testWhenThereAreOrdersInSystemReturnOrderWithTheEarliestTimeReceivedWithNoTimeProcessed() throws noCustomerIdAndNameException, noListOfPurchaseException {
-        OrderQueue orderQ = new OrderQueue();
-
-        // adding order#1
-        Order order1 = new Order("CUST00001", "ABC Construction");
-        order1.addPurchase(new Purchase("PROD0004", 450));
-        order1.addPurchase(new Purchase("PROD0006", 250));
-        orderQ.add(order1);
-
-        // adding order#2
-        Order order2 = new Order("CUST00002", "Fozzy Group");
-        order2.addPurchase(new Purchase("PROD0012", 50));
-        orderQ.add(order2);
-
-        // adding order#3
-        Order order3 = new Order("CUST00002", "Welding&Steel");
-        order3.addPurchase(new Purchase("PROD0012", 150));
-        orderQ.add(order2);
-
-        Order expResult = orderQ.orderQueue.element();
-
-        Order result = orderQ.theEarliestOrder(orderQ.orderQueue);
-        assertEquals(expResult, result);
-
-    }
-
-    @Test
-    public void testWhenOrderHasTimeReceivedAndPurchasesAreInInventoryTable() {
-
-    }
-
-
-   
-    @Test
+    
+    
+    // Request for Next Order. Return with the Earliest time received;
+        @Test
     public void testGivenRequestForNextOrderReturnOrderWithTheEarliestTimeReceived() throws noCustomerIdAndNameException, noListOfPurchaseException {
         OrderQueue orderQ = new OrderQueue();
 
@@ -169,4 +127,80 @@ public class OrderQueueTest {
         assertEquals(expResult, realResult);
 
     }
+
+   //  Request for Next Order. When There are no orders Return NULL;
+    @Test
+    public void testWhenThereAreNoOrdersInTheSystemReturnNull() {
+        OrderQueue orderQ = new OrderQueue();
+        Order isThereAnyOrders = orderQ.requestForOrder();
+        assertSame(null, isThereAnyOrders);
+    }
+    
+    //  Request for Next Order. When The Order daes not have Time Received;
+     @Test
+    public void testWhenTheOrderDoesNotHaveTimeReceivedThrowException() throws noCustomerIdAndNameException, noListOfPurchaseException{
+         boolean isTimeReceived = false;
+        try{
+        OrderQueue orderQ = new OrderQueue();   
+        Order order = new Order("CUST00001", "ABC Construction");
+        order.addPurchase(new Purchase("PROD0004", 450));
+        order.addPurchase(new Purchase("PROD0006", 250));       
+         orderQ.add(order);
+         Order requestedOrder = orderQ.requestForOrder();
+         orderQ.process(requestedOrder);
+ 
+        } catch (noTimeReceivedException ex){
+           isTimeReceived = true;  
+        }
+         assertFalse(isTimeReceived);
+    }    
+
+    
+    @Test
+    public void testRequestFulfillWhenOrderDoesNotHaveTimeProcessedThrowException() throws noCustomerIdAndNameException, noListOfPurchaseException, noTimeProcessedException, noTimeReceivedException{
+        boolean isTimeReceived = false;
+        try{
+        OrderQueue orderQ = new OrderQueue();   
+        Order order = new Order("CUST00001", "ABC Construction");
+        order.addPurchase(new Purchase("PROD0004", 450));
+        order.addPurchase(new Purchase("PROD0006", 250));       
+        orderQ.add(order);
+        orderQ.process(orderQ.orderQueue.element());
+        orderQ.fulfill();
+         
+ 
+       } catch (noTimeReceivedException ex){
+           isTimeReceived = true;  
+        }
+         assertFalse(isTimeReceived);
+    
+    }
+    
+     @Test
+    public void testRequestFulfillWhenOrderDoesNotHaveTimeReceivedThrowException() throws noCustomerIdAndNameException, noListOfPurchaseException, noTimeProcessedException, noTimeReceivedException{
+        boolean isTimeProcessed = false;
+        try{
+        OrderQueue orderQ = new OrderQueue();   
+        Order order = new Order("CUST00001", "ABC Construction");
+        order.addPurchase(new Purchase("PROD0004", 450));
+        order.addPurchase(new Purchase("PROD0006", 250));       
+        orderQ.add(order);
+        orderQ.fulfill();
+         
+ 
+        } catch (noTimeProcessedException ex){
+           isTimeProcessed = true;  
+        }
+         assertTrue(isTimeProcessed);
+    
+    }
+
+
+    @Test
+    public void testWhenOrderHasTimeReceivedAndPurchasesAreInInventoryTable() {
+
+    }
+
+
+   
 }

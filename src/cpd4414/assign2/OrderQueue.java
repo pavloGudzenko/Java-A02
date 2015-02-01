@@ -15,10 +15,12 @@
  */
 package cpd4414.assign2;
 
-import java.util.ArrayDeque;
-import java.util.Date;
-import java.util.Queue;
 import cpd4414.assign2.noCustomerIdAndNameException;
+import java.util.ArrayDeque;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+import java.util.Queue;
 
 /**
  *
@@ -27,6 +29,8 @@ import cpd4414.assign2.noCustomerIdAndNameException;
 public class OrderQueue {
 
     Queue<Order> orderQueue = new ArrayDeque<>();
+    List<Order> fulfildList = new ArrayList<>(); 
+    
 
     // adding new Order
     public void add(Order order) throws noCustomerIdAndNameException, noListOfPurchaseException {
@@ -55,9 +59,26 @@ public class OrderQueue {
         
 
     // processing Orders
-    public void process(Order order) {
-        order.setTimeProcessed(new Date());
+    public void process(Order order) throws noTimeReceivedException {
+       if (order.getTimeReceived() == null) throw new noTimeReceivedException();
+        else order.setTimeProcessed(new Date());
     }
+    
+    
+    public void fulfill() throws noTimeProcessedException, noTimeReceivedException{
+         if (orderQueue.element().getTimeProcessed() == null) {
+          throw new noTimeProcessedException();
+         } else 
+             if (orderQueue.element().getTimeReceived() == null) {
+             throw new noTimeReceivedException();
+             } else
+         {
+           fulfildList.add(orderQueue.element());
+           orderQueue.remove();
+         }
+        
+    }
+    
 
     public Order theEarliestOrder(Queue<Order> OQ) {
         Order result = null;
@@ -71,16 +92,14 @@ public class OrderQueue {
         }
         return result;
     }
-
-    public void chekingOrderForCustomerInfo(Order order) throws noCustomerIdAndNameException {
-       
-        }
-
-
-    public void chekingListOfPurchase(Order order) throws noListOfPurchaseException {
     
-    }
+}    
 
+
+class noTimeReceivedException extends Exception{
+    public String message(){
+      return "The order does not have a 'time received' ";
+    }
 }
 
 class noCustomerIdAndNameException extends Exception {
@@ -96,3 +115,5 @@ class noListOfPurchaseException extends Exception {
         return "The List Of Purchases is empty";
     }
 }
+
+class noTimeProcessedException extends Exception {}

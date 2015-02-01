@@ -32,23 +32,20 @@ import org.json.simple.JSONObject;
 public class OrderQueue {
 
     Queue<Order> orderQueue = new ArrayDeque<>();
-    List<Order> fulfildList = new ArrayList<>(); 
-    
+    List<Order> fulfildList = new ArrayList<>();
 
     // adding new Order
     public void add(Order order) throws noCustomerIdAndNameException, noListOfPurchaseException {
-         if (order.getCustomerId() == null || order.getCustomerName() == null || order.getCustomerId() == "" || order.getCustomerName() == "") {
+        if (order.getCustomerId() == null || order.getCustomerName() == null || order.getCustomerId() == "" || order.getCustomerName() == "") {
             throw new noCustomerIdAndNameException();
-         }
-             if (order.getListOfPurchases().isEmpty()) {
+        }
+        if (order.getListOfPurchases().isEmpty()) {
             throw new noListOfPurchaseException();
         }
-        
+
         orderQueue.add(order);
         order.setTimeReceived(new Date());
     }
-    
-    
 
     // request for Order
     public Order requestForOrder() {
@@ -58,67 +55,77 @@ public class OrderQueue {
             return orderQueue.element();
         }
     }
-        
-        
 
     // processing Orders
     public void process(Order order) throws noTimeReceivedException {
-       if (order.getTimeReceived() == null) throw new noTimeReceivedException();
-        else order.setTimeProcessed(new Date());
+        if (order.getTimeReceived() == null) {
+            throw new noTimeReceivedException();
+        }
+        for (int index = 0; index < order.getListOfPurchases().size(); index++) {
+            int quantity = Inventory.getQuantityForId(order.getListOfPurchases().get(index).getProductId());
+            if (quantity > -1) {
+                order.setTimeProcessed(new Date());
+            }
+        }
+
     }
-    
-    
-    public void fulfill(Order order) throws noTimeProcessedException, noTimeReceivedException{
-         if (order.getTimeProcessed() == null) {
-          throw new noTimeProcessedException();
-         } else 
-             if (order.getTimeReceived() == null) {
-             throw new noTimeReceivedException();
-             } else
-         {
-           this.fulfildList.add(order);
-           this.orderQueue.remove();
-         }
-        
+
+    public void fulfill(Order order) throws noTimeProcessedException, noTimeReceivedException {
+        if (order.getTimeProcessed() == null) {
+            throw new noTimeProcessedException();
+        } else if (order.getTimeReceived() == null) {
+            throw new noTimeReceivedException();
+        } else {
+               for (int index = 0; index < order.getListOfPurchases().size(); index++) {
+            int quantity = Inventory.getQuantityForId(order.getListOfPurchases().get(index).getProductId());
+            if (quantity > -1) {
+                order.setTimeFulfilled(new Date());
+            }
+        }
+            this.fulfildList.add(order);
+            this.orderQueue.remove();
+        }
+
     }
-    
-    public String report() throws noOrdersInSystemException, IOException{
-       if (fulfildList.isEmpty()) throw new noOrdersInSystemException();
-       String report = "{\"orders\":[";
-          for (int i = 0; i < fulfildList.size(); i++){
-              report = report + toJSON(fulfildList.get(i));
-               if (i < fulfildList.size() - 1){
-                    report = report +  ",";
-                }
-          }
-       return report;   
+
+    public String report() throws noOrdersInSystemException, IOException {
+        if (fulfildList.isEmpty()) {
+            throw new noOrdersInSystemException();
+        }
+        String report = "{\"orders\":[";
+        for (int i = 0; i < fulfildList.size(); i++) {
+            report = report + toJSON(fulfildList.get(i));
+            if (i < fulfildList.size() - 1) {
+                report = report + ",";
+            }
+        }
+        return report;
     }
-    
-    public String toJSON(Order order) throws IOException{
-       JSONObject JSON = new JSONObject();
+
+    public String toJSON(Order order) throws IOException {
+        JSONObject JSON = new JSONObject();
         JSON.put("customerId", order.getCustomerId());
         JSON.put("customerName", order.getCustomerName());
         JSON.put("timeReceived", order.getTimeReceived());
         JSON.put("timeProcessed", order.getTimeProcessed());
         JSON.put("timeFulfilled", order.getTimeFulfilled());
         System.out.print("\"purchases\":[");
-            for (int i = 0; i < order.getListOfPurchases().size(); i++){
-                System.out.print("{"); 
-               JSON.put("productId", order.getListOfPurchases().get(i).getProductId());
-               JSON.put("quantity", order.getListOfPurchases().get(i).getQuantity());
-                System.out.print("}");
-                if (i < order.getListOfPurchases().size() - 1){
-                    System.out.print(",");
-                }
+        for (int i = 0; i < order.getListOfPurchases().size(); i++) {
+            System.out.print("{");
+            JSON.put("productId", order.getListOfPurchases().get(i).getProductId());
+            JSON.put("quantity", order.getListOfPurchases().get(i).getQuantity());
+            System.out.print("}");
+            if (i < order.getListOfPurchases().size() - 1) {
+                System.out.print(",");
             }
-          JSON.put("notes", order.getNotes());   
+        }
+        JSON.put("notes", order.getNotes());
         StringWriter output = new StringWriter();
         JSON.writeJSONString(output);
 
         String result = output.toString();
         return result;
     }
-    
 
     public Order theEarliestOrder(Queue<Order> OQ) {
         Order result = null;
@@ -132,13 +139,13 @@ public class OrderQueue {
         }
         return result;
     }
-    
-}    
 
+}
 
-class noTimeReceivedException extends Exception{
-    public String message(){
-      return "The order does not have a 'time received' ";
+class noTimeReceivedException extends Exception {
+
+    public String message() {
+        return "The order does not have a 'time received' ";
     }
 }
 
@@ -156,6 +163,8 @@ class noListOfPurchaseException extends Exception {
     }
 }
 
-class noTimeProcessedException extends Exception {}
+class noTimeProcessedException extends Exception {
+}
 
-class noOrdersInSystemException extends Exception {}
+class noOrdersInSystemException extends Exception {
+}

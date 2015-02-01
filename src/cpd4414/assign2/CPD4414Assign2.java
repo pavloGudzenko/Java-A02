@@ -16,6 +16,8 @@
 
 package cpd4414.assign2;
 
+import java.io.IOException;
+
 /**
  *
  * @author Pavlo Gudzenko <pavlo.gudzenko@gmail.com>
@@ -25,8 +27,10 @@ public class CPD4414Assign2 {
     /**
      * @param args the command line arguments
      */
-    public static void main(String[] args) {
-        // TODO code application logic here
+    public static void main(String[] args) throws noCustomerIdAndNameException, noListOfPurchaseException, noTimeReceivedException, noTimeProcessedException, noOrdersInSystemException, IOException {
+      
     }
+    
+           
     
 }

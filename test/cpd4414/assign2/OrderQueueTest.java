@@ -65,8 +65,8 @@ public class OrderQueueTest {
     public void testWhenCustomerExistsAndPurchasesExistThenTimeReceivedIsNow() throws noCustomerIdAndNameException, noListOfPurchaseException {
         OrderQueue orderQueue = new OrderQueue();
         Order order = new Order("CUST00001", "ABC Construction");
-        order.addPurchase(new Purchase("PROD0004", 450));
-        order.addPurchase(new Purchase("PROD0006", 250));
+        order.addPurchase(new Purchase(4, 450));
+        order.addPurchase(new Purchase(6, 250));
         orderQueue.add(order);
 
         long expResult = new Date().getTime();
@@ -82,8 +82,8 @@ public class OrderQueueTest {
             OrderQueue orderQ = new OrderQueue();
 
             Order order = new Order(null, null);
-            order.addPurchase(new Purchase("PROD0004", 450));
-            order.addPurchase(new Purchase("PROD0006", 250));
+            order.addPurchase(new Purchase(4, 450));
+            order.addPurchase(new Purchase(6, 250));
             orderQ.add(order);
         } catch (noCustomerIdAndNameException ex) {
             exceptionFlag = true;
@@ -114,13 +114,13 @@ public class OrderQueueTest {
 
         // adding order#1
         Order order1 = new Order("CUST00001", "ABC Construction");
-        order1.addPurchase(new Purchase("PROD0004", 450));
-        order1.addPurchase(new Purchase("PROD0006", 250));
+        order1.addPurchase(new Purchase(4, 450));
+        order1.addPurchase(new Purchase(6, 250));
         orderQ.add(order1);
 
         // adding order#2
         Order order2 = new Order("CUST00002", "Fozzy Group");
-        order2.addPurchase(new Purchase("PROD0012", 50));
+        order2.addPurchase(new Purchase(12, 50));
         orderQ.add(order2);
 
         Order expResult = order1;
@@ -145,8 +145,8 @@ public class OrderQueueTest {
         try {
             OrderQueue orderQ = new OrderQueue();
             Order order = new Order("CUST00001", "ABC Construction");
-            order.addPurchase(new Purchase("PROD0004", 450));
-            order.addPurchase(new Purchase("PROD0006", 250));
+            order.addPurchase(new Purchase(4, 450));
+            order.addPurchase(new Purchase(6, 250));
             orderQ.add(order);
             Order requestedOrder = orderQ.requestForOrder();
             orderQ.process(requestedOrder);
@@ -163,8 +163,8 @@ public class OrderQueueTest {
         try {
             OrderQueue orderQ = new OrderQueue();
             Order order = new Order("CUST00001", "ABC Construction");
-            order.addPurchase(new Purchase("PROD0004", 450));
-            order.addPurchase(new Purchase("PROD0006", 250));
+            order.addPurchase(new Purchase(4, 450));
+            order.addPurchase(new Purchase(6, 250));
             orderQ.add(order);
             orderQ.process(orderQ.orderQueue.element());
             orderQ.fulfill(orderQ.requestForOrder());
@@ -182,8 +182,8 @@ public class OrderQueueTest {
         try {
             OrderQueue orderQ = new OrderQueue();
             Order order = new Order("CUST00001", "ABC Construction");
-            order.addPurchase(new Purchase("PROD0004", 450));
-            order.addPurchase(new Purchase("PROD0006", 250));
+            order.addPurchase(new Purchase(5, 450));
+            order.addPurchase(new Purchase(7, 250));
             orderQ.add(order);
             orderQ.fulfill(orderQ.requestForOrder());
 
@@ -195,9 +195,18 @@ public class OrderQueueTest {
     }
 
     @Test
-    public void testWhenOrderHasTimeReceivedAndPurchasesAreInInventoryTable() {
-
+    public void testWhenOrderHasTimeReceivedAndPurchasesAreInInventoryTable() throws noCustomerIdAndNameException, noListOfPurchaseException, noTimeReceivedException {
+       OrderQueue orderQ = new OrderQueue();
+       Order order = new Order("CUST00001", "ABC Construction");
+            order.addPurchase(new Purchase(4, 450));
+            order.addPurchase(new Purchase(6, 250));
+            orderQ.add(order);
+            orderQ.process(orderQ.orderQueue.element());   
+            
+            assertNotNull(orderQ.orderQueue.element().getTimeProcessed());
     }
+    
+    
 
     @Test
     public void testWhenRequestForOrdersButNoOrdersInSystemThrowException() throws noOrdersInSystemException, IOException {
@@ -219,13 +228,13 @@ public class OrderQueueTest {
         OrderQueue orderQ = new OrderQueue();
 
         Order order = new Order("CUST00001", "ABC Construction");
-        order.addPurchase(new Purchase("PROD0004", 450));
-        order.addPurchase(new Purchase("PROD0006", 250));
+        order.addPurchase(new Purchase(4, 450));
+        order.addPurchase(new Purchase(6, 250));
         orderQ.add(order);
 
         Order orderNext = new Order("CUST00002", "Genesis Construction");
-        orderNext.addPurchase(new Purchase("PROD0004", 450));
-        orderNext.addPurchase(new Purchase("PROD0006", 250));
+        orderNext.addPurchase(new Purchase(4, 450));
+        orderNext.addPurchase(new Purchase(6, 250));
         orderQ.add(orderNext);
 
         

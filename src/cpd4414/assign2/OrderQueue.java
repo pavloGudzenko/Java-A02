@@ -16,11 +16,14 @@
 package cpd4414.assign2;
 
 import cpd4414.assign2.noCustomerIdAndNameException;
+import java.io.IOException;
+import java.io.StringWriter;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Queue;
+import org.json.simple.JSONObject;
 
 /**
  *
@@ -65,23 +68,55 @@ public class OrderQueue {
     }
     
     
-    public void fulfill() throws noTimeProcessedException, noTimeReceivedException{
-         if (orderQueue.element().getTimeProcessed() == null) {
+    public void fulfill(Order order) throws noTimeProcessedException, noTimeReceivedException{
+         if (order.getTimeProcessed() == null) {
           throw new noTimeProcessedException();
          } else 
-             if (orderQueue.element().getTimeReceived() == null) {
+             if (order.getTimeReceived() == null) {
              throw new noTimeReceivedException();
              } else
          {
-           fulfildList.add(orderQueue.element());
-           orderQueue.remove();
+           this.fulfildList.add(order);
+           this.orderQueue.remove();
          }
         
     }
     
-    public void report() throws noOrdersInSystemException{
+    public String report() throws noOrdersInSystemException, IOException{
        if (fulfildList.isEmpty()) throw new noOrdersInSystemException();
-       
+       String report = "{\"orders\":[";
+          for (int i = 0; i < fulfildList.size(); i++){
+              report = report + toJSON(fulfildList.get(i));
+               if (i < fulfildList.size() - 1){
+                    report = report +  ",";
+                }
+          }
+       return report;   
+    }
+    
+    public String toJSON(Order order) throws IOException{
+       JSONObject JSON = new JSONObject();
+        JSON.put("customerId", order.getCustomerId());
+        JSON.put("customerName", order.getCustomerName());
+        JSON.put("timeReceived", order.getTimeReceived());
+        JSON.put("timeProcessed", order.getTimeProcessed());
+        JSON.put("timeFulfilled", order.getTimeFulfilled());
+        System.out.print("\"purchases\":[");
+            for (int i = 0; i < order.getListOfPurchases().size(); i++){
+                System.out.print("{"); 
+               JSON.put("productId", order.getListOfPurchases().get(i).getProductId());
+               JSON.put("quantity", order.getListOfPurchases().get(i).getQuantity());
+                System.out.print("}");
+                if (i < order.getListOfPurchases().size() - 1){
+                    System.out.print(",");
+                }
+            }
+          JSON.put("notes", order.getNotes());   
+        StringWriter output = new StringWriter();
+        JSON.writeJSONString(output);
+
+        String result = output.toString();
+        return result;
     }
     
 

@@ -157,7 +157,7 @@ public class OrderQueueTest {
 
     
     @Test
-    public void testRequestFulfillWhenOrderDoesNotHaveTimeProcessedThrowException() throws noCustomerIdAndNameException, noListOfPurchaseException, noTimeProcessedException, noTimeReceivedException{
+    public void testRequestFulfillWhenOrderDoesNotHaveTimeReceivedThrowException() throws noCustomerIdAndNameException, noListOfPurchaseException, noTimeProcessedException, noTimeReceivedException{
         boolean isTimeReceived = false;
         try{
         OrderQueue orderQ = new OrderQueue();   
@@ -177,7 +177,7 @@ public class OrderQueueTest {
     }
     
      @Test
-    public void testRequestFulfillWhenOrderDoesNotHaveTimeReceivedThrowException() throws noCustomerIdAndNameException, noListOfPurchaseException, noTimeProcessedException, noTimeReceivedException{
+    public void testRequestFulfillWhenOrderDoesNotHaveTimeProcessedThrowException() throws noCustomerIdAndNameException, noListOfPurchaseException, noTimeProcessedException, noTimeReceivedException{
         boolean isTimeProcessed = false;
         try{
         OrderQueue orderQ = new OrderQueue();   
@@ -194,13 +194,28 @@ public class OrderQueueTest {
          assertTrue(isTimeProcessed);
     
     }
+   
 
 
     @Test
     public void testWhenOrderHasTimeReceivedAndPurchasesAreInInventoryTable() {
-
+        
     }
 
+    
+    
+    @Test
+    public void testWhenRequestForOrdersButNoOrdersInSystemThrowException() throws noOrdersInSystemException {
+        boolean isNoOrdersForReport = false;
+        try {
+        OrderQueue orderQ = new OrderQueue();
+          orderQ.report();
+        } catch (noOrdersInSystemException ex) {
+           isNoOrdersForReport = true;
+        }
+        assertTrue(isNoOrdersForReport);
+        
+    }
 
    
 }

@@ -79,6 +79,11 @@ public class OrderQueue {
         
     }
     
+    public void report() throws noOrdersInSystemException{
+       if (fulfildList.isEmpty()) throw new noOrdersInSystemException();
+       
+    }
+    
 
     public Order theEarliestOrder(Queue<Order> OQ) {
         Order result = null;
@@ -117,3 +122,5 @@ class noListOfPurchaseException extends Exception {
 }
 
 class noTimeProcessedException extends Exception {}
+
+class noOrdersInSystemException extends Exception {}
